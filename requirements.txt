@@ -1,8 +1,12 @@
-fastapi
-uvicorn
-sqlalchemy
-psycopg2-binary
-python-jose[cryptography]
-passlib[bcrypt]
-python-dotenv
-alembic
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+
+pydantic==1.10.13         # BaseSettings 등 기존 방식 사용 가능
+python-dotenv==1.0.1      # .env 파일 읽기용 (선택사항)
+
+sqlalchemy==1.4.52        # 안정적인 SQLAlchemy 1.x 버전
+psycopg2-binary==2.9.9    # PostgreSQL 드라이버
+
+python-jose[cryptography]==3.3.0  # JWT 토큰 처리용
+
+alembic==1.13.1           # DB 마이그레이션 도구
