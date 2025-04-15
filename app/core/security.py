@@ -52,16 +52,28 @@ def get_current_user(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="자격 증명이 유효하지 않습니다.",
     )
+
     try:
+        print("🟡 토큰 디코딩 시작")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[settings.ALGORITHM])
+        print("🟢 payload:", payload)
+
         user_id: str = payload.get("sub")
+        print("🔑 user_id:", user_id)
+
         if user_id is None:
+            print("❌ user_id 없음")
             raise credentials_exception
-    except JWTError:
+
+    except JWTError as e:
+        print("❌ JWTError:", e)
         raise credentials_exception
 
     user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    print("🧍 user from DB:", user)
+
     if not user:
+        print("❌ 해당 user_id가 DB에 없음")
         raise credentials_exception
 
     return UserSchema.from_orm(user)

@@ -18,7 +18,7 @@ def signup(user_data: SignupRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="비밀번호는 8자 이상이어야 합니다.")
 
     user = auth_crud.create_user(db, user_data)
-    token = auth_crud.create_access_token(data={"sub": user.email})
+    token = auth_crud.create_access_token(data={"sub": str(user.id)})
     return standard_response(
         result={"access_token": token, "token_type": "bearer"},
         code="200",

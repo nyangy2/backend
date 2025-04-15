@@ -1,27 +1,18 @@
 from fastapi import APIRouter, Query
 from typing import List, Optional
-from pydantic import BaseModel
+from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation
+from app.utils.response import standard_response
 
 router = APIRouter()
-
-# 응답 모델 예시
-class DrugRecommendation(BaseModel):
-    drug_id: int
-    drug_name: str
-    score: float
 
 # 1. 자주 검색되는 증상
 @router.get("/symptoms/popular", tags=["symptoms"])
 async def get_popular_symptoms():
-    # TODO: DB에서 인기 증상 조회
-    return {
-        "result": ["두통", "발열", "기침", "콧물", "복통"]
-    }
+     # 실제 DB 연동 전 테스트용 더미 데이터
+    symptoms = ["두통", "발열", "기침", "콧물", "더미데이터"]
+    return standard_response(result=symptoms)
 
 # 2. 사용자가 입력한 증상 검색
-class SymptomSearchRequest(BaseModel):
-    keywords: List[str]
-
 @router.post("/symptoms/search", response_model=List[DrugRecommendation], tags=["symptoms"])
 async def search_symptoms(req: SymptomSearchRequest):
     # TODO: 입력된 키워드로 약 추천 로직 수행

@@ -1,15 +1,13 @@
 from datetime import datetime
-
 from fastapi import Request, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
+# 1. 유효성 검사 오류 (422)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     error_detail = exc.errors()[0] if exc.errors() else {}
     raw_msg = error_detail.get("msg", "입력값이 유효하지 않습니다.")
 
-    
     if "valid email address" in raw_msg:
         error_msg = "이메일 형식이 올바르지 않습니다."
     else:
@@ -25,19 +23,26 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         }
     )
 
-# FastAPI의 HTTPException → 401, 403, 404 등
+# 2. 일반 HTTP 예외 (401, 403, 404 등)
 async def http_exception_handler(request: Request, exc: HTTPException):
+    # "Not authenticated" → 한글 메시지로 변환
+    message = (
+        "로그인이 필요합니다."
+        if exc.status_code == 401 and exc.detail == "Not authenticated"
+        else exc.detail
+    )
+
     return JSONResponse(
         status_code=exc.status_code,
         content={
             "timestamp": datetime.utcnow().isoformat(),
             "code": str(exc.status_code),
-            "message": exc.detail,
+            "message": message,
             "result": None
         }
     )
 
-# 기타 알 수 없는 오류 → 500
+# 3. 예기치 못한 서버 에러 (500)
 async def generic_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
@@ -48,4 +53,3 @@ async def generic_exception_handler(request: Request, exc: Exception):
             "result": None
         }
     )
-

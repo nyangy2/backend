@@ -34,5 +34,5 @@ def authenticate_user(db: Session, login_data: LoginRequest):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="잘못된 이메일 또는 비밀번호입니다.")
 
     # 토큰 생성
-    token = create_access_token(data={"sub": user.email})
+    token = create_access_token(data={"sub": str(user.id)})
     return token

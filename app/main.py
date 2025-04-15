@@ -8,7 +8,7 @@ from app.db.base import Base
 from app.utils.error_handler import (
     validation_exception_handler,
     http_exception_handler,
-    generic_exception_handler
+    generic_exception_handler,
 )
 
 app = FastAPI()
@@ -38,7 +38,7 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-#예외 핸들러러
+#예외 핸들러
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
