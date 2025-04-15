@@ -1,11 +1,21 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends,Query
 from typing import List, Optional
+<<<<<<< HEAD
 from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation
 from app.utils.response import standard_response
+=======
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.core.security import get_current_user
+from app.crud.symptom_log import get_popular_symptoms
+from app.utils.response import standard_response
+from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation
+>>>>>>> dev
 
 router = APIRouter()
 
 # 1. 자주 검색되는 증상
+<<<<<<< HEAD
 @router.get("/symptoms/popular", tags=["symptoms"])
 async def get_popular_symptoms():
      # 실제 DB 연동 전 테스트용 더미 데이터
@@ -14,6 +24,15 @@ async def get_popular_symptoms():
 
 # 2. 사용자가 입력한 증상 검색
 @router.post("/symptoms/search", response_model=List[DrugRecommendation], tags=["symptoms"])
+=======
+@router.get("/popular", tags=["symptoms"])
+def popular_symptoms(user=Depends(get_current_user), db: Session = Depends(get_db)):
+    popular = get_popular_symptoms(db)
+    return standard_response(result=popular)
+
+# 2. 사용자가 입력한 증상 검색
+@router.post("/search", response_model=List[DrugRecommendation], tags=["symptoms"])
+>>>>>>> dev
 async def search_symptoms(req: SymptomSearchRequest):
     # TODO: 입력된 키워드로 약 추천 로직 수행
     return [
@@ -22,7 +41,7 @@ async def search_symptoms(req: SymptomSearchRequest):
     ]
 
 # 3. 신체 부위 기반 증상 추천
-@router.get("/symptoms/by-body-part", tags=["symptoms"])
+@router.get("/by-body-part", tags=["symptoms"])
 async def get_symptoms_by_body_part(part: str = Query(..., example="머리")):
     # TODO: part 값으로 관련 증상 리스트 반환
     return {
