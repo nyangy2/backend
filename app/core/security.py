@@ -1,9 +1,30 @@
+from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from jose import jwt
-from app.core.config import settings
+from jose import JWTError, jwt
+from app.core.config import settings  # .env 값 불러오기
 
-def create_access_token(data: dict, expires_delta: timedelta = None):
+# 비밀번호 해시용 context
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# JWT 관련 설정
+# .env에서 가져온 값들
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+
+
+# 비밀번호 해싱
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+# 비밀번호 검증
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+# 액세스 토큰 생성
+def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES))
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)

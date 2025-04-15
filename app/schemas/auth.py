@@ -3,6 +3,7 @@ from pydantic import BaseModel, EmailStr
 # 회원가입 요청 모델
 class SignupRequest(BaseModel):
     email: EmailStr
+    name: str
     password: str
 
 # 로그인 요청 모델
