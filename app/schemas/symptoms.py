@@ -1,6 +1,8 @@
 from typing import List
 from pydantic import BaseModel
 
+
+
 class SymptomSearchRequest(BaseModel):
     keywords: List[str]
 
