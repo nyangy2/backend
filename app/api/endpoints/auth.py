@@ -25,7 +25,7 @@ def signup(user_data: SignupRequest, db: Session = Depends(get_db)):
         message="회원가입이 완료되었습니다."
     )
 
-
+#cex
 
 @router.post("/login")
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
