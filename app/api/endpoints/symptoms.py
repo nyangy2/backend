@@ -18,7 +18,7 @@ async def get_popular_symptoms():
         "result": ["두통", "발열", "기침", "콧물", "복통"]
     }
 
-# 2. 사용자 입력 증상 검색
+# 2. 사용자가 입력한 증상 검색
 class SymptomSearchRequest(BaseModel):
     keywords: List[str]
 
