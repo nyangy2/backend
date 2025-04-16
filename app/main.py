@@ -13,7 +13,7 @@ from app.utils.error_handler import (
 
 app = FastAPI()
 
-# Swagger Authorize 버튼을 위한 OpenAPI 스키마 설정
+# OpenAPI 스키마 설정
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema

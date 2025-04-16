@@ -1,6 +1,6 @@
 
 
-from pydantic_settings import BaseSettings  # ✅ 여기 바뀜
+from pydantic_settings import BaseSettings
 from pydantic import EmailStr
 
 class Settings(BaseSettings):

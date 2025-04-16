@@ -6,7 +6,6 @@ from fastapi import HTTPException, status
 
 # 회원가입
 def create_user(db: Session, user_data: SignupRequest):
-    # 이메일 중복 확인
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 존재하는 이메일입니다.")
@@ -31,6 +30,6 @@ def authenticate_user(db: Session, login_data: LoginRequest):
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="잘못된 이메일 또는 비밀번호입니다.")
 
-    # 토큰 생성
+    
     token = create_access_token(data={"sub": str(user.id)})
     return token
