@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends,Query
+from fastapi import APIRouter, Depends, Query
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.core.security import get_current_user
-from app.crud.symptom_log import get_popular_symptoms
+from app.crud.symptom_log import get_popular_symptoms, log_symptom_search
 from app.utils.response import standard_response
+from app.schemas.user import User as UserSchema
 from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation
 
 router = APIRouter()
@@ -17,8 +18,16 @@ def popular_symptoms(user=Depends(get_current_user), db: Session = Depends(get_d
 
 # 사용자가 입력한 증상 검색
 @router.post("/search", response_model=List[DrugRecommendation], tags=["symptoms"])
-async def search_symptoms(req: SymptomSearchRequest):
-    # TODO: 입력된 키워드로 약 추천 로직 수행
+async def search_symptoms(
+    req: SymptomSearchRequest,
+    db: Session = Depends(get_db),
+    user: UserSchema = Depends(get_current_user)
+):
+    # 증상 검색 기록 저장
+    for symptom in req.symptoms:
+        log_symptom_search(db=db, user_id=user.id, symptom=symptom)
+
+    # TODO: AI 약 추천 로직 대신 더미 결과
     return [
         DrugRecommendation(drug_id=1, drug_name="타이레놀", score=0.95),
         DrugRecommendation(drug_id=2, drug_name="콜대원", score=0.87)

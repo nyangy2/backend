@@ -12,4 +12,6 @@ api_router.include_router(
 )
 #api_router.include_router(drugs.router, prefix="/drugs", tags=["drugs"])
 #api_router.include_router(image.router, prefix="/image", tags=["image"])
-#api_router.include_router(mypage.router, prefix="/mypage", tags=["mypage"])
+api_router.include_router(
+    mypage.router, prefix="/mypage", tags=["mypage"],
+    dependencies=[Depends(get_current_user)])

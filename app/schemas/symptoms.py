@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class SymptomSearchRequest(BaseModel):
-    keywords: List[str]
+    symptoms: List[str]
 
 class DrugRecommendation(BaseModel):
     drug_id: int

@@ -11,3 +11,10 @@ def get_popular_symptoms(db: Session, limit: int = 5):
         .all()
     )
     return [row.symptom for row in result]
+
+
+
+def log_symptom_search(db: Session, user_id: int, symptom: str):
+    log = SymptomSearchLog(user_id=user_id, symptom=symptom)
+    db.add(log)
+    db.commit()
