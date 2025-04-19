@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.core.security import get_current_user
-from app.schemas.mypage import UserDrug, UserDrugCreate, UserHealthInfo, UserHealthInfoCreate
+from app.schemas.user_health import UserDrug, UserDrugCreate, UserHealthInfo, UserHealthInfoCreate
 from app.crud import mypage as crud_mypage
 from app.utils.response import standard_response
 from typing import List

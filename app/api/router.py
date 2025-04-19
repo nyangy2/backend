@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.api.endpoints import auth, symptoms, drugs, image, mypage
+from app.api.endpoints import auth, symptoms, drugs, image, user_health
 from app.core.security import get_current_user
 
 api_router = APIRouter()
@@ -13,5 +13,5 @@ api_router.include_router(
 #api_router.include_router(drugs.router, prefix="/drugs", tags=["drugs"])
 #api_router.include_router(image.router, prefix="/image", tags=["image"])
 api_router.include_router(
-    mypage.router, prefix="/mypage", tags=["mypage"],
+    user_health.router, prefix="/user_health", tags=["user_health"],
     dependencies=[Depends(get_current_user)])
