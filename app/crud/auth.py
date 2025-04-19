@@ -32,4 +32,4 @@ def authenticate_user(db: Session, login_data: LoginRequest):
 
     
     token = create_access_token(data={"sub": str(user.id)})
-    return token
+    return {"user": user, "token": token}

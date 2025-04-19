@@ -29,12 +29,20 @@ def signup(user_data: SignupRequest, db: Session = Depends(get_db)):
 
 @router.post("/login")
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    token = auth_crud.authenticate_user(db, login_data)
-    if not token:
+    auth_result = auth_crud.authenticate_user(db, login_data)
+    if not auth_result:
         raise HTTPException(status_code=401, detail="이메일 또는 비밀번호가 올바르지 않습니다.")
 
+    user = auth_result["user"]
+    token = auth_result["token"]
+
     return standard_response(
-        result={"access_token": token, "token_type": "bearer"},
+        result={
+            "access_token": token,
+            "token_type": "bearer",
+            "name": user.name,
+            "email": user.email
+        },
         code="200",
         message="로그인에 성공하였습니다."
     )
