@@ -10,7 +10,7 @@ api_router.include_router(
     symptoms.router, prefix="/symptoms", tags=["symptoms"],
     dependencies=[Depends(get_current_user)]
 )
-#api_router.include_router(drugs.router, prefix="/drugs", tags=["drugs"])
+api_router.include_router(drugs.router, prefix="/drugs", tags=["drugs"])
 #api_router.include_router(image.router, prefix="/image", tags=["image"])
 api_router.include_router(
     user_health.router, prefix="/user_health", tags=["user_health"],

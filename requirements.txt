@@ -7,3 +7,4 @@ passlib[bcrypt]
 python-dotenv
 pydantic[email]           # EmailStr용
 pydantic-settings         # BaseSettings용 (Pydantic 2.x 대응)
+httpx
