@@ -73,3 +73,9 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
     # 로그인 성공 후 프론트로 토큰 전달 (쿼리 파라미터)
     redirect_url = f"{settings.FRONTEND_REDIRECT_URL}/login/success?token={token}"
     return RedirectResponse(url=redirect_url)
+
+    # 테스트용 JSON 응답 (임시로 redirect 대신 사용)
+    #return {
+    #    "user": UserFull.model_validate(user),
+    #    "token": token
+    #}
