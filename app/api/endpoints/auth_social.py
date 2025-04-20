@@ -79,3 +79,60 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
     #    "user": UserFull.model_validate(user),
     #    "token": token
     #}
+
+#네이버
+@router.get("/naver/callback")
+async def naver_callback(code: str, state: str, db: Session = Depends(get_db)):
+    async with httpx.AsyncClient() as client:
+        token_resp = await client.post(
+            "https://nid.naver.com/oauth2.0/token",
+            params={
+                "grant_type": "authorization_code",
+                "client_id": settings.NAVER_CLIENT_ID,
+                "client_secret": settings.NAVER_CLIENT_SECRET,
+                "code": code,
+                "state": state
+            }
+        )
+
+    if token_resp.status_code != 200:
+        raise HTTPException(status_code=400, detail="네이버 토큰 요청 실패")
+
+    access_token = token_resp.json().get("access_token")
+
+    # 2. 사용자 정보 요청
+    async with httpx.AsyncClient() as client:
+        profile_resp = await client.get(
+            "https://openapi.naver.com/v1/nid/me",
+            headers={"Authorization": f"Bearer {access_token}"}
+        )
+
+    if profile_resp.status_code != 200:
+        raise HTTPException(status_code=400, detail="네이버 사용자 정보 요청 실패")
+
+    user_info = profile_resp.json().get("response", {})
+    naver_id = str(user_info.get("id"))
+    email = user_info.get("email", f"{naver_id}@naver.com")
+    name = user_info.get("name", "네이버사용자")
+
+    # 3. 기존 사용자 확인 or 회원가입
+    existing_user = db.query(User).filter(User.email == email).first()
+    if not existing_user:
+        user = auth_crud.create_user_by_social(
+            db=db,
+            email=email,
+            provider="naver",
+            social_id=naver_id,
+            name=name
+        )
+    else:
+        user = existing_user
+
+    # 4. JWT 발급
+    token = auth_crud.create_access_token(data={"sub": str(user.id)})
+
+    # 5. 응답
+    return {
+        "user": UserFull.model_validate(user),
+        "token": token
+    }

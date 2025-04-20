@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     MFDS_API_KEY: str
     KAKAO_CLIENT_ID: str
     KAKAO_REDIRECT_URI: str
+    NAVER_CLIENT_ID: str
+    NAVER_CLIENT_SECRET: str
+    NAVER_REDIRECT_URI: str
     FRONTEND_REDIRECT_URL: str
 
     class Config:
