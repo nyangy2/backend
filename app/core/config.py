@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     MFDS_API_KEY: str
     KAKAO_CLIENT_ID: str
     KAKAO_REDIRECT_URI: str
+    FRONTEND_REDIRECT_URL: str
 
     class Config:
         env_file = ".env"

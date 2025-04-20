@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import RedirectResponse
 import httpx
 from sqlalchemy.orm import Session
 from app.core.config import settings
@@ -7,6 +8,7 @@ from app.db.models.user import User
 from app.crud import auth as auth_crud
 from app.utils.user import get_current_user_model  # ⚠️ 이 함수 너가 만든 거
 from app.schemas.user import UserFull
+
 
 router = APIRouter()
 
@@ -67,8 +69,7 @@ async def kakao_callback(code: str, db: Session = Depends(get_db)):
     # 5. JWT 발급
     token = auth_crud.create_access_token(data={"sub": str(user.id)})
 
-    # 6. 응답 통일
-    return {
-        "user": UserFull.model_validate(user),
-        "token": token
-    }
+
+    # 로그인 성공 후 프론트로 토큰 전달 (쿼리 파라미터)
+    redirect_url = f"{settings.FRONTEND_REDIRECT_URL}/login/success?token={token}"
+    return RedirectResponse(url=redirect_url)
