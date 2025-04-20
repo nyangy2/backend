@@ -7,7 +7,11 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    hashed_password = Column(String, nullable=True)
+    provider = Column(String, default="local")
+    social_id = Column(String, nullable=True)
     drugs = relationship("UserDrug", back_populates="user", cascade="all, delete")
     health_info = relationship("UserHealthInfo", back_populates="user", cascade="all, delete")
     
+
+

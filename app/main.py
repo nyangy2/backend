@@ -47,11 +47,11 @@ origins = [
     "http://13.209.5.228:80"
 ]
 
-app.add.middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_method=["*"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
