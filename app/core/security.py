@@ -54,13 +54,8 @@ def get_current_user(
     )
 
     try:
-       
         payload = jwt.decode(token, SECRET_KEY, algorithms=[settings.ALGORITHM])
-        
-
         user_id: str = payload.get("sub")
-        
-
         if user_id is None:
             
             raise credentials_exception
@@ -75,5 +70,30 @@ def get_current_user(
     if not user:
         
         raise credentials_exception
-
     return UserSchema.from_orm(user)
+
+#SQLAlchemy 모델 객체 반환용용
+def get_current_user_model(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+) -> UserModel:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="자격 증명이 유효하지 않습니다.",
+    )
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[settings.ALGORITHM])
+        user_id: str = payload.get("sub")
+        if user_id is None:
+            raise credentials_exception
+
+    except JWTError:
+        raise credentials_exception
+
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+
+    if not user:
+        raise credentials_exception
+
+    return user

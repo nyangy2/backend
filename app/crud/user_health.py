@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.db.models.mypage import UserDrug, UserHealthInfo
+from app.db.models.user_health import UserDrug, UserHealthInfo
 from fastapi import HTTPException
 
 def get_user_drugs(db: Session, user_id: int):
