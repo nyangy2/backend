@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 
@@ -37,6 +38,22 @@ def custom_openapi():
     return app.openapi_schema
 
 app.openapi = custom_openapi
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:80",
+    "http://127.0.0.1:5173",
+    "http://13.209.5.228:5173",
+    "http://13.209.5.228:80"
+]
+
+app.add.middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_method=["*"],
+    allow_headers=["*"],
+)
 
 #예외 핸들러
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
