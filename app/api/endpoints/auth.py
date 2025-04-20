@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.schemas.auth import SignupRequest, LoginRequest
 from app.db.session import get_db
 from app.utils.response import standard_response
+from app.utils.password import is_valid_password
 from app.crud import auth as auth_crud
 from app.db.models.user import User
 
@@ -14,8 +15,11 @@ def signup(user_data: SignupRequest, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="이미 등록된 이메일입니다.")
 
-    if len(user_data.password) < 8:
-        raise HTTPException(status_code=400, detail="비밀번호는 8자 이상이어야 합니다.")
+    if not is_valid_password(user_data.password):
+        raise HTTPException(
+            status_code=400,
+            detail="비밀번호는 최소 8자 이상이며, 공백 없이 소문자와 숫자를 포함해야 합니다."
+        )
 
     user = auth_crud.create_user(db, user_data)
     token = auth_crud.create_access_token(data={"sub": str(user.id)})
