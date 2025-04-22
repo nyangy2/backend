@@ -38,8 +38,4 @@ def update_user_info(
     user: User = Depends(get_current_user_model)
 ):
     result = mypage_crud.update_user(db, user, update_data)
-    return {
-        "message": "회원 정보가 수정되었습니다.",
-        "updated_fields": result["updated_fields"],
-        "user": result["user"]
-    }
+    return result
