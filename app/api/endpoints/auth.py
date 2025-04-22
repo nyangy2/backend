@@ -24,10 +24,20 @@ def signup(user_data: SignupRequest, db: Session = Depends(get_db)):
     user = auth_crud.create_user(db, user_data)
     token = auth_crud.create_access_token(data={"sub": str(user.id)})
     return standard_response(
-        result={"access_token": token, "token_type": "bearer"},
-        code="200",
-        message="회원가입이 완료되었습니다."
-    )
+    result={
+        "access_token": token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "age": user.age,
+            "gender": user.gender,
+        },
+    },
+    code="200",
+    message="회원가입이 완료되었습니다."
+)
 
 
 

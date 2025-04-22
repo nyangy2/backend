@@ -16,13 +16,16 @@ def create_user(db: Session, user_data: SignupRequest):
         email=user_data.email,
         name=user_data.name,
         hashed_password=hashed_pw,
-        provider="local"  # 명시적으로 로컬 회원가입 표시
+        provider="local",  # 명시적으로 로컬 회원가입 표시
+        age=user_data.age,
+        gender=user_data.gender
     )
     
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
 #소셜 로그인
 def create_user_by_social(db: Session, email: str, provider: str, social_id: str, name: str) -> User:
     user = User(

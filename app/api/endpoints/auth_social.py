@@ -132,7 +132,8 @@ async def naver_callback(code: str, state: str, db: Session = Depends(get_db)):
     token = auth_crud.create_access_token(data={"sub": str(user.id)})
 
     # 5. 응답
-    return {
-        "user": UserFull.model_validate(user),
-        "token": token
-    }
+    redirect_url = (
+    f"{settings.FRONTEND_REDIRECT_URL}/login/success"
+    f"?token={token}&name={user.name}&email={user.email}"
+    )
+    return RedirectResponse(url=redirect_url)
