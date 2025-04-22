@@ -1,8 +1,21 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 
-class UpdatePasswordRequest(BaseModel):
-    current_password: str = Field(..., example="asdf1234")
-    new_password: str = Field(..., example="abc12345")
+class UserInfoResponse(BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    age: Optional[int] = None
+    gender: Optional[str] = None
+    provider: Optional[str] = None
 
-class UpdateNameRequest(BaseModel):
-    new_name: str = Field(..., example="홍길동")
+    class Config:
+        from_attributes = True  # SQLAlchemy 연동용
+
+class VerifyPasswordRequest(BaseModel):
+    password: str
+class UserUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    age: Optional[int] = None
+    gender: Optional[str] = None
+

@@ -53,3 +53,15 @@ async def generic_exception_handler(request: Request, exc: Exception):
             "result": None
         }
     )
+
+# 4. 비즈니스 로직 오류 (비밀번호 조건 불일치 등)
+async def value_error_handler(request: Request, exc: ValueError):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "code": "400",
+            "message": str(exc),
+            "result": None
+        }
+    )
