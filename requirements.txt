@@ -3,8 +3,9 @@ uvicorn
 sqlalchemy
 psycopg2-binary
 python-jose[cryptography]
-passlib[bcrypt]
+passlib
+bcrypt<4.0.0           # 수동으로 버전 고정 (중요!)
 python-dotenv
-pydantic[email]           # EmailStr용
-pydantic-settings         # BaseSettings용 (Pydantic 2.x 대응)
+pydantic[email]
+pydantic-settings
 httpx
