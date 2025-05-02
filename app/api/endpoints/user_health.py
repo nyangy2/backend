@@ -90,7 +90,21 @@ def delete_user_condition(
     return crud_mypage.delete_user_condition(db, current_user.id, condition_id)
 
 
-@router.get("/conditions/search", response_model=List[ConditionSearchResult])
+@router.get("/conditions/list", response_model=List[ConditionSearchResult])
+def list_all_chronic_conditions(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    results = (
+        db.query(ChronicCondition.id, ChronicCondition.name)
+        .order_by(ChronicCondition.id.asc())  # ← 여기에서 오름차순 정렬!
+        .all()
+    )
+    return [ConditionSearchResult(id=r.id, name=r.name) for r in results]
+
+
+
+#@router.get("/conditions/search", response_model=List[ConditionSearchResult])
 def search_chronic_conditions(
     keyword: str = Query(..., min_length=1),
     db: Session = Depends(get_db),
