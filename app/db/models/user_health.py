@@ -1,22 +1,30 @@
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, DateTime, func
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from datetime import datetime, timezone
-from sqlalchemy.orm import relationship
 
 class UserDrug(Base):
     __tablename__ = "user_drugs"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    drug_name = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    user = relationship("User", back_populates="drugs")
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    item_seq = Column(String, ForeignKey("medications.item_seq", ondelete="CASCADE"), nullable=False)
+    item_name = Column(String, nullable=False)
+    entp_name = Column(String)
+    atc_code = Column(String)
+    main_ingr_eng = Column(String)
+    main_item_ingr = Column(String)
+    created_at = Column(TIMESTAMP, server_default=func.now())
 
-class UserHealthInfo(Base):
-    __tablename__ = "user_health_info"
+    
+class UserCondition(Base):
+    __tablename__ = "user_conditions"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    condition = Column(String, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    user = relationship("User", back_populates="health_info")
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    condition_id = Column(Integer, ForeignKey("chronic_conditions.id", ondelete="CASCADE"), nullable=False)
+
+    name = Column(String, nullable=False)       # 질환 한글명 복사
+    name_eng = Column(String, nullable=True)    # 영어명
+    icd_code = Column(String, nullable=True)    # ICD 코드
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+

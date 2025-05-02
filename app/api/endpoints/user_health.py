@@ -1,47 +1,107 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.core.security import get_current_user
-from app.schemas.user_health import UserDrug, UserDrugCreate, UserHealthInfo, UserHealthInfoCreate
-from app.crud import user_health as crud_mypage
-from app.utils.response import standard_response
+from app.db.models.medication import Medication
+from app.db.models.chronic_condition import ChronicCondition
+from app.schemas.user_health import UserDrug, UserDrugCreate, DrugSearchResult, UserDrugSimpleResponse, UserConditionCreate, UserConditionResponse, ConditionSearchResult
+from app.crud import user_health as crud_mypage  # ✅ import 필요
 from typing import List
 
 router = APIRouter()
 
-#복용약품
-@router.get("/drugs", response_model=List[UserDrug])
-def read_user_drugs(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return crud_mypage.get_user_drugs(db, current_user.id)
-
-@router.post("/drugs", response_model=UserDrug)
+# 복용약 등록
+@router.post("/drugs", response_model=UserDrugSimpleResponse)
 def create_user_drug(
     data: UserDrugCreate,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return crud_mypage.create_user_drug(db, current_user.id, data.drug_name)
+    return crud_mypage.create_user_drug(
+        db, current_user.id, data.item_seq
+    )
 
-@router.delete("/drugs/{drug_id}")
-def delete_user_drug(drug_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    crud_mypage.delete_user_drug(db, current_user.id, drug_id)
-    return standard_response(message="복용약이 삭제되었습니다.")
-
-
-#기저질환
-@router.get("/health-info", response_model=List[UserHealthInfo])
-def read_user_health_info(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return crud_mypage.get_user_health_info(db, current_user.id)
-
-@router.post("/health-info", response_model=UserHealthInfo)
-def create_user_health_info(
-    data: UserHealthInfoCreate,
+@router.get("/drugs/search", response_model=List[DrugSearchResult])
+def search_user_drug_candidates(
+    keyword: str = Query(..., min_length=1),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return crud_mypage.create_user_health_info(db, current_user.id, data.condition)
+    results = (
+        db.query(Medication.item_seq, Medication.item_name, Medication.entp_name)
+        .filter(Medication.item_name.ilike(f"{keyword}%"))
+        .order_by(Medication.item_name.asc())
+        .limit(10)
+        .all()
+    )
 
-@router.delete("/health-info/{health_info_id}")
-def delete_user_health_info(health_info_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    crud_mypage.delete_user_health_info(db, current_user.id, health_info_id)
-    return standard_response(message="기저질환이 삭제되었습니다.")
+    return [
+        DrugSearchResult(
+            item_seq=r.item_seq,
+            item_name=r.item_name,
+            entp_name=r.entp_name
+        )
+        for r in results
+    ]
+
+@router.get("/drugs", response_model=List[UserDrugSimpleResponse])
+def read_user_drugs(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    return crud_mypage.get_user_drugs(db, current_user.id)
+
+@router.delete("/drugs/{item_seq}", response_model=UserDrugSimpleResponse)
+def delete_user_drug(
+    item_seq: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    return crud_mypage.delete_user_drug_by_item_seq(db, current_user.id, item_seq)
+
+#------------------------------------------------------------
+
+# 사용자 질환 등록
+@router.post("/conditions", response_model=UserConditionResponse)
+def create_user_condition(
+    data: UserConditionCreate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    return crud_mypage.create_user_condition(db, current_user.id, data.condition_id)
+
+
+# 사용자 질환 목록 조회
+@router.get("/conditions", response_model=List[UserConditionResponse])
+def get_user_conditions(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    return crud_mypage.get_user_conditions(db, current_user.id)
+
+
+# 사용자 질환 삭제
+@router.delete("/conditions/{condition_id}", response_model=UserConditionResponse)
+def delete_user_condition(
+    condition_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    return crud_mypage.delete_user_condition(db, current_user.id, condition_id)
+
+
+@router.get("/conditions/search", response_model=List[ConditionSearchResult])
+def search_chronic_conditions(
+    keyword: str = Query(..., min_length=1),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+    results = (
+        db.query(ChronicCondition.id, ChronicCondition.name)
+        .filter(ChronicCondition.name.ilike(f"{keyword}%"))
+        .order_by(ChronicCondition.name.asc())
+        .limit(10)
+        .all()
+    )
+
+    return [ConditionSearchResult(id=r.id, name=r.name) for r in results]

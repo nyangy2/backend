@@ -1,50 +1,107 @@
-from sqlalchemy.orm import Session
-from app.db.models.user_health import UserDrug, UserHealthInfo
 from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from app.db.models.user_health import UserDrug, UserCondition
+from app.db.models.medication import Medication
+from app.db.models.chronic_condition import ChronicCondition
 
-def get_user_drugs(db: Session, user_id: int):
-    return db.query(UserDrug).filter(UserDrug.user_id == user_id).all()
-
-def get_user_health_info(db: Session, user_id: int):
-    return db.query(UserHealthInfo).filter(UserHealthInfo.user_id == user_id).all()
-
-def create_user_health_info(db: Session, user_id: int, condition: str):
-    existing = db.query(UserHealthInfo).filter_by(user_id=user_id, condition=condition).first()
+def create_user_drug(db: Session, user_id: int, item_seq: str) -> UserDrug:
+    #중복 등록 방지
+    existing = (
+        db.query(UserDrug)
+        .filter(UserDrug.user_id == user_id, UserDrug.item_seq == item_seq)
+        .first()
+    )
     if existing:
-        raise HTTPException(status_code=400, detail="이미 등록된 기저질환입니다.")
+        raise HTTPException(status_code=400, detail="이미 등록된 약입니다.")
 
-    db_info = UserHealthInfo(user_id=user_id, condition=condition)
-    db.add(db_info)
+    med = db.query(Medication).filter(Medication.item_seq == item_seq).first()
+    if not med:
+        raise HTTPException(status_code=404, detail="해당 약품을 찾을 수 없습니다.")
+
+    new_drug = UserDrug(
+        user_id=user_id,
+        item_seq=med.item_seq,
+        item_name=med.item_name,
+        entp_name=med.entp_name,
+        atc_code=med.atc_code,
+        main_ingr_eng=med.main_ingr_eng,
+        main_item_ingr=med.main_item_ingr
+    )
+    db.add(new_drug)
     db.commit()
-    db.refresh(db_info)
-    return db_info
+    db.refresh(new_drug)
+    return new_drug
 
-def delete_user_health_info(db: Session, user_id: int, health_info_id: int):
-    info = db.query(UserHealthInfo).filter(
-        UserHealthInfo.id == health_info_id,
-        UserHealthInfo.user_id == user_id
-    ).first()
+def get_user_drugs(db: Session, user_id: int) -> list[UserDrug]:
+    return (
+        db.query(UserDrug)
+        .filter(UserDrug.user_id == user_id)
+        .order_by(UserDrug.created_at.desc())
+        .all()
+    )
 
-    if not info:
-        raise HTTPException(status_code=404, detail="해당 기저질환이 존재하지 않거나 권한이 없습니다.")
-
-    db.delete(info)
-    db.commit()
-
-def create_user_drug(db: Session, user_id: int, drug_name: str):
-    existing = db.query(UserDrug).filter_by(user_id=user_id, drug_name=drug_name).first()
-    if existing:
-        raise HTTPException(status_code=400, detail="이미 등록된 복용약입니다.")
-    
-    new = UserDrug(user_id=user_id, drug_name=drug_name)
-    db.add(new)
-    db.commit()
-    db.refresh(new)
-    return new
-
-def delete_user_drug(db: Session, user_id: int, drug_id: int):
-    drug = db.query(UserDrug).filter(UserDrug.id == drug_id, UserDrug.user_id == user_id).first()
+def delete_user_drug_by_item_seq(db: Session, user_id: int, item_seq: str) -> UserDrug:
+    drug = (
+        db.query(UserDrug)
+        .filter(UserDrug.user_id == user_id, UserDrug.item_seq == item_seq)
+        .first()
+    )
     if not drug:
-        raise HTTPException(status_code=404, detail="해당 복용약이 존재하지 않거나 권한이 없습니다.")
+        raise HTTPException(status_code=404, detail="해당 약품이 존재하지 않습니다.")
+
     db.delete(drug)
     db.commit()
+    return drug  # 삭제된 객체를 반환
+
+
+#--------------------------------------------
+
+def create_user_condition(db: Session, user_id: int, condition_id: int) -> UserCondition:
+    # 중복 등록 방지
+    existing = (
+        db.query(UserCondition)
+        .filter(UserCondition.user_id == user_id, UserCondition.condition_id == condition_id)
+        .first()
+    )
+    if existing:
+        raise HTTPException(status_code=400, detail="이미 등록된 질환입니다.")
+
+    # chronic_conditions에서 정보 가져오기
+    cond = db.query(ChronicCondition).filter(ChronicCondition.id == condition_id).first()
+    if not cond:
+        raise HTTPException(status_code=404, detail="해당 질환 정보를 찾을 수 없습니다.")
+
+    # 복사 저장
+    new_condition = UserCondition(
+        user_id=user_id,
+        condition_id=condition_id,
+        name=cond.name,
+        name_eng=cond.name_eng,
+        icd_code=cond.icd_code
+    )
+    db.add(new_condition)
+    db.commit()
+    db.refresh(new_condition)
+    return new_condition
+
+
+def get_user_conditions(db: Session, user_id: int) -> list[UserCondition]:
+    return (
+        db.query(UserCondition)
+        .filter(UserCondition.user_id == user_id)
+        .order_by(UserCondition.created_at.desc())
+        .all()
+    )
+
+def delete_user_condition(db: Session, user_id: int, condition_id: int) -> UserCondition:
+    condition = (
+        db.query(UserCondition)
+        .filter(UserCondition.user_id == user_id, UserCondition.condition_id == condition_id)
+        .first()
+    )
+    if not condition:
+        raise HTTPException(status_code=404, detail="등록된 질환이 없습니다.")
+
+    db.delete(condition)
+    db.commit()
+    return condition

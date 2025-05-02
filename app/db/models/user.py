@@ -14,8 +14,8 @@ class User(Base):
     age = Column(Integer, nullable=True)
     gender = Column(String, nullable=True)  # 예: "male", "female", "other"
     
-    drugs = relationship("UserDrug", back_populates="user", cascade="all, delete")
-    health_info = relationship("UserHealthInfo", back_populates="user", cascade="all, delete")
+    #drugs = relationship("UserDrug", back_populates="user", cascade="all, delete")
+    #health_info = relationship("UserHealthInfo", back_populates="user", cascade="all, delete")
     
 
 
