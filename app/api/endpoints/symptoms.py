@@ -6,7 +6,7 @@ from app.core.security import get_current_user
 from app.crud.symptom_log import get_popular_symptoms, log_symptom_search
 from app.utils.response import standard_response
 from app.schemas.user import User as UserSchema
-from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation
+from app.schemas.symptoms import SymptomSearchRequest, DrugRecommendation, SymptomSearchResult
 from app.db.models.symptom import Symptom
 
 router = APIRouter()
@@ -17,20 +17,23 @@ def popular_symptoms(user=Depends(get_current_user), db: Session = Depends(get_d
     popular = get_popular_symptoms(db)
     return standard_response(result=popular)
 
-@router.get("/search", response_model=List[str])
+
+
+
+@router.get("/search", response_model=List[SymptomSearchResult])
 def search_symptom_candidates(
     keyword: str = Query(..., min_length=1),
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
     results = (
-        db.query(Symptom.name)
-        .filter(Symptom.name.ilike(f"%{keyword}%"))  # 증상은 중간 포함도 가능하게
+        db.query(Symptom.id, Symptom.name)
+        .filter(Symptom.name.ilike(f"%{keyword}%"))
         .order_by(Symptom.name.asc())
         .limit(10)
         .all()
     )
-    return [r[0] for r in results]
+    return [{"id": r.id, "name": r.name} for r in results]
 
 
 # 사용자가 입력한 증상 검색

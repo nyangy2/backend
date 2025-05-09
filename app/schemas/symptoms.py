@@ -10,3 +10,8 @@ class DrugRecommendation(BaseModel):
     drug_id: int
     drug_name: str
     score: float
+
+
+class SymptomSearchResult(BaseModel):
+    id: int
+    name: str
