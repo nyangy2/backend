@@ -9,7 +9,7 @@ class SymptomSearchRequest(BaseModel):
 class DrugRecommendation(BaseModel):
     drug_id: int
     drug_name: str
-    score: float
+    entp_name: str
 
 
 class SymptomSearchResult(BaseModel):

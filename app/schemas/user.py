@@ -18,3 +18,13 @@ class UserFull(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+#증상검색용
+class UserWithProfile(User):
+    age: int
+    gender: str
+
+    
+    class Config:
+        from_attributes = True

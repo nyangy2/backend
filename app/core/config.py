@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     NAVER_CLIENT_SECRET: str
     NAVER_REDIRECT_URI: str
     FRONTEND_REDIRECT_URL: str
+    OPENAI_API_KEY: str
 
     class Config:
         env_file = ".env"

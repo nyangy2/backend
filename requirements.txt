@@ -9,3 +9,4 @@ python-dotenv
 pydantic[email]
 pydantic-settings
 httpx
+openai==0.28.0
