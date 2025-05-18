@@ -28,4 +28,6 @@ api_router.include_router(
 
 api_router.include_router(medication.router, prefix="/medications", tags=["medications"])
 
-#api_router.include_router(image.router, prefix="/image", tags=["image"])
+api_router.include_router(
+    image.router, prefix="/image", tags=["image"],
+    dependencies=[Depends(get_current_user)])

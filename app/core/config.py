@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     NAVER_REDIRECT_URI: str
     FRONTEND_REDIRECT_URL: str
     OPENAI_API_KEY: str
+    GOOGLE_VISION_API_KEY: str
 
     class Config:
         env_file = ".env"
