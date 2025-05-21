@@ -3,6 +3,7 @@ from app.core.security import get_current_user
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.db.models.medication import Medication
+from app.ai.drug_interaction import check_interactions_openai
 from app.db.models.user import User
 from typing import List
 from app.schemas.medication import (
@@ -35,11 +36,8 @@ def search_medications(
 def check_interaction(
     request: InteractionCheckRequest,
     db: Session = Depends(get_db),
-    user: User = Depends(get_current_user)
+    user=Depends(get_current_user)
 ):
-    interactions = check_condensed_interactions_for_user(
-        db=db,
-        user_id=user.id,
-        new_item_seq=request.new_medication_id
-    )
-    return {"interactions": interactions}
+    # GPT 기반 분석 함수로 위임
+    response = check_interactions_openai(user.id, request.new_medication_id, db)
+    return response

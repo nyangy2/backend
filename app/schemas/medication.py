@@ -35,8 +35,15 @@ class InteractionCheckResponse(BaseModel):
 class CondensedInteractionItem(BaseModel):
     product_a: str
     manufacturer_a: Optional[str] = ""
-    interaction_type: Literal["중복성분", "병용금기"]
+    interaction_type: str
     detail: str
+
+class AlternativeDrug(BaseModel):
+    item_name: str
+    item_seq: str
+    manufacturer: str
+    ingredient: str
 
 class CondensedInteractionResponse(BaseModel):
     interactions: List[CondensedInteractionItem]
+    alternative_drugs: List[AlternativeDrug] = []
