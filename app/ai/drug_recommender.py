@@ -53,7 +53,7 @@ def expand_ingredient_keywords(normalized_ingredients: list[str]) -> list[str]:
 # ✅ GPT 호출
 def generate_answer_gpt(prompt: str) -> str:
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.2
     )
