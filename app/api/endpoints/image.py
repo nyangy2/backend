@@ -17,6 +17,9 @@ def clean_ocr_text(raw_text: str) -> str:
     cleaned = re.sub(r"\s+", " ", cleaned).strip()
     return cleaned
 
+def remove_leading_item_seq(text: str) -> str:
+    return re.sub(r"^\d{9,10}\s*", "", text)  # 9~10자리 숫자 + 공백 제거
+
 def normalize_text(raw_text: str) -> str:
     # 괄호 제거 + 공백 제거 + 특수문자 제거
     cleaned = re.sub(r"\(.*?\)", "", raw_text)
@@ -46,7 +49,7 @@ def extract_probable_drug_lines(ocr_text: str) -> list[str]:
     lines = ocr_text.splitlines()
     candidates = []
     for line in lines:
-        if any(keyword in line for keyword in ["정", "캡슐", "정제", "mg", "mL", "그램"]):
+        if any(keyword in line for keyword in ["정", "캡슐", "정제", "mg", "mL", "그램", "점안액"]):
             candidates.append(clean_ocr_text(line))
     return candidates
 
@@ -68,7 +71,8 @@ def scan_medication_image(
     all_results = []
 
     for keyword in candidate_lines:
-        normalized = normalize_text(keyword)
+        cleaned = remove_leading_item_seq(keyword)
+        normalized = normalize_text(cleaned)
         print(f"[DEBUG] 검색 키워드: '{normalized}'")
 
         results = (

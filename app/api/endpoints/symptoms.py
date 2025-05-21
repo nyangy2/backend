@@ -106,11 +106,3 @@ async def search_symptoms(
             entp_name=drug.entp_name or ""
         ) for drug in matching_drugs
     ]
-
-# 신체 부위 기반 증상 추천
-@router.get("/by-body-part", tags=["symptoms"])
-async def get_symptoms_by_body_part(part: str = Query(..., example="머리")):
-    # TODO: part 값으로 관련 증상 리스트 반환
-    return {
-        "result": ["두통", "눈 통증", "어지러움"]
-    }
