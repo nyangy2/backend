@@ -15,3 +15,4 @@ class DrugRecommendation(BaseModel):
 class SymptomSearchResult(BaseModel):
     id: int
     name: str
+    name_eng: str

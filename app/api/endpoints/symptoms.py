@@ -35,13 +35,13 @@ def search_symptom_candidates(
     current_user=Depends(get_current_user)
 ):
     results = (
-        db.query(Symptom.id, Symptom.name)
+        db.query(Symptom.id, Symptom.name, Symptom.name_eng)
         .filter(Symptom.name.ilike(f"%{keyword}%"))
         .order_by(Symptom.name.asc())
         .limit(10)
         .all()
     )
-    return [{"id": r.id, "name": r.name} for r in results]
+    return [{"id": r.id, "name": r.name, "name_eng" : r.name_eng} for r in results]
 
 
 # 사용자가 입력한 증상 검색
