@@ -9,7 +9,7 @@ from app.db.models.medication import Medication
 from app.schemas.image import ImageSearchResult
 from app.core.config import settings
 
-router = APIRouter(prefix="/image")
+router = APIRouter()
 
 def clean_ocr_text(raw_text: str) -> str:
     cleaned = re.sub(r"\(.*?\)", "", raw_text)
