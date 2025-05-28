@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, DateTime, func
+from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, DateTime, func,  Boolean
 from app.db.base import Base
 
 class UserDrug(Base):
@@ -14,6 +14,9 @@ class UserDrug(Base):
     main_item_ingr = Column(String)
     created_at = Column(TIMESTAMP, server_default=func.now())
 
+    morning = Column(Boolean, nullable=False, default=False)
+    afternoon = Column(Boolean, nullable=False, default=False)
+    evening = Column(Boolean, nullable=False, default=False)
     
 class UserCondition(Base):
     __tablename__ = "user_conditions"

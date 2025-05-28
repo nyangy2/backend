@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.openapi.utils import get_openapi
 
+
+from app.utils.scheduler import start_scheduler
 from app.api.router import api_router
 from app.db.session import engine
 from app.db.base import Base
@@ -66,6 +68,7 @@ app.add_exception_handler(ValueError, value_error_handler)
 def on_startup():
     try:
         Base.metadata.create_all(bind=engine)
+        start_scheduler()
     except Exception as e:
         print(f" DB 연결 실패: {e}")
 
