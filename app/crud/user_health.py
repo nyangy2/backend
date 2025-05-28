@@ -1,8 +1,9 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.db.models.user_health import UserDrug, UserCondition, DrugTakeStatusUpdate
+from app.db.models.user_health import UserDrug, UserCondition
 from app.db.models.medication import Medication
 from app.db.models.chronic_condition import ChronicCondition
+from app.schemas.user_health import DrugTakeStatusUpdate, DrugTakeStatusUpdateResponse
 
 def create_user_drug(db: Session, user_id: int, item_seq: str) -> UserDrug:
     #중복 등록 방지
@@ -71,7 +72,12 @@ def update_take_status(db: Session, user_id: int, item_seq: str, update_data: Dr
     
     db.commit()
     db.refresh(drug)
-    return drug
+    return DrugTakeStatusUpdateResponse(
+        item_seq=drug.item_seq,
+        morning=drug.morning,
+        afternoon=drug.afternoon,
+        evening=drug.evening
+    )
 
 #--------------------------------------------
 

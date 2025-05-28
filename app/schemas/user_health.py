@@ -39,6 +39,12 @@ class DrugTakeStatusUpdate(BaseModel):
     afternoon: Optional[bool] = None
     evening: Optional[bool] = None
 
+class DrugTakeStatusUpdateResponse(BaseModel):
+    item_seq: str
+    morning: Optional[bool] = None
+    afternoon: Optional[bool] = None
+    evening: Optional[bool] = None
+
 #---------------------------------------------------
 #기저질환용
 
