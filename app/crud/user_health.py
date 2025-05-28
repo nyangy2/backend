@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.db.models.user_health import UserDrug, UserCondition
+from app.db.models.user_health import UserDrug, UserCondition, DrugTakeStatusUpdate
 from app.db.models.medication import Medication
 from app.db.models.chronic_condition import ChronicCondition
 
@@ -53,6 +53,25 @@ def delete_user_drug_by_item_seq(db: Session, user_id: int, item_seq: str) -> Us
     db.commit()
     return drug  # 삭제된 객체를 반환
 
+def update_take_status(db: Session, user_id: int, item_seq: str, update_data: DrugTakeStatusUpdate) -> UserDrug:
+    drug = (
+        db.query(UserDrug)
+        .filter(UserDrug.user_id == user_id, UserDrug.item_seq == item_seq)
+        .first()
+    )
+    if not drug:
+        raise HTTPException(status_code=404, detail="해당 약품이 존재하지 않습니다.")
+    
+    if update_data.morning is not None:
+        drug.morning = update_data.morning
+    if update_data.afternoon is not None:
+        drug.afternoon = update_data.afternoon
+    if update_data.evening is not None:
+        drug.evening = update_data.evening
+    
+    db.commit()
+    db.refresh(drug)
+    return drug
 
 #--------------------------------------------
 

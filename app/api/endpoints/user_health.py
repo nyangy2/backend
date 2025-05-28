@@ -4,7 +4,16 @@ from app.db.session import get_db
 from app.core.security import get_current_user
 from app.db.models.medication import Medication
 from app.db.models.chronic_condition import ChronicCondition
-from app.schemas.user_health import UserDrug, UserDrugCreate, DrugSearchResult, UserDrugSimpleResponse, UserConditionCreate, UserConditionResponse, ConditionSearchResult
+from app.schemas.user_health import (
+    UserDrug,
+    DrugTakeStatusUpdate,
+    UserDrugCreate,
+    DrugSearchResult,
+    UserDrugSimpleResponse,
+    UserConditionCreate,
+    UserConditionResponse,
+    ConditionSearchResult,
+)
 from app.crud import user_health as crud_mypage  # ✅ import 필요
 from typing import List
 
@@ -58,6 +67,18 @@ def delete_user_drug(
     current_user=Depends(get_current_user)
 ):
     return crud_mypage.delete_user_drug_by_item_seq(db, current_user.id, item_seq)
+
+@router.patch("/drugs/{item_seq}", response_model=UserDrugSimpleResponse)
+def patch__take_status(
+    item_seq: str,
+    update_data = DrugTakeStatusUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+
+):
+    return crud_mypage.update_take_status(db, current_user.id, item_seq, update_data)
+
+
 
 #------------------------------------------------------------
 

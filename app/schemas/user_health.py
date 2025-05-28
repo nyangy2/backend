@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 
 # POST 요청용: keyword 하나만 받음 (자동완성 기반 등록)
@@ -32,6 +33,11 @@ class DrugSearchResult(BaseModel):
     item_seq: str
     item_name: str
     entp_name: str
+
+class DrugTakeStatusUpdate(BaseModel):
+    morning: Optional[bool] = None
+    afternoon: Optional[bool] = None
+    evening: Optional[bool] = None
 
 #---------------------------------------------------
 #기저질환용

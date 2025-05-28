@@ -109,7 +109,7 @@ def check_condensed_interactions_for_user(
                 matched = True
                 break
 
-            # 🔧 여기부터 ilike로 느슨한 비교 추가
+            # ilike로 느슨한 비교 추가
             a_clean = a.lower().strip()
             b_clean = b.lower().strip()
 
