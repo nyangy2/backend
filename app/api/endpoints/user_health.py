@@ -10,6 +10,7 @@ from app.schemas.user_health import (
     UserDrugCreate,
     DrugSearchResult,
     UserDrugSimpleResponse,
+    UserDrugSimpleResponse2,
     UserConditionCreate,
     UserConditionResponse,
     ConditionSearchResult,
@@ -54,7 +55,7 @@ def search_user_drug_candidates(
         for r in results
     ]
 
-@router.get("/drugs", response_model=List[UserDrugSimpleResponse])
+@router.get("/drugs", response_model=List[UserDrugSimpleResponse2])
 def read_user_drugs(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)

@@ -19,7 +19,15 @@ class UserDrug(BaseModel):
 
     class Config:
         from_attributes = True  # Pydantic v2 기준
-
+class UserDrugSimpleResponse2(BaseModel):
+    item_seq: str
+    item_name: str
+    entp_name: str
+    morning: bool
+    afternoon: bool
+    evening: bool
+    class Config:
+        from_attributes = True
 class UserDrugSimpleResponse(BaseModel):
     item_seq: str
     item_name: str
