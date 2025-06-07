@@ -6,7 +6,7 @@ from app.core.config import settings
 from app.db.session import get_db
 from app.db.models.user import User
 from app.crud import auth as auth_crud
-from app.utils.user import get_current_user_model  # ⚠️ 이 함수 너가 만든 거
+from app.utils.user import get_current_user_model
 from app.schemas.user import UserFull
 
 

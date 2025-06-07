@@ -72,7 +72,7 @@ def get_current_user(
         raise credentials_exception
     return UserSchema.from_orm(user)
 
-#SQLAlchemy 모델 객체 반환용용
+#SQLAlchemy 모델 객체 반환용
 def get_current_user_model(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)

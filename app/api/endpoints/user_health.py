@@ -16,7 +16,7 @@ from app.schemas.user_health import (
     ConditionSearchResult,
     DrugTakeStatusUpdateResponse
 )
-from app.crud import user_health as crud_mypage  # ✅ import 필요
+from app.crud import user_health as crud_mypage
 from typing import List
 
 router = APIRouter()
@@ -119,7 +119,7 @@ def list_all_chronic_conditions(
 ):
     results = (
         db.query(ChronicCondition.id, ChronicCondition.name)
-        .order_by(ChronicCondition.id.asc())  # ← 여기에서 오름차순 정렬!
+        .order_by(ChronicCondition.id.asc())
         .all()
     )
     return [ConditionSearchResult(id=r.id, name=r.name) for r in results]
